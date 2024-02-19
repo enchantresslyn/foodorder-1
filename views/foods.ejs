@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foods</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #f8f8f8;
+        }
+        div.food-item {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <%- include('navbar.ejs') %>
+    <div id="cart-icon">
+        <img src="/path/to/cart-icon.png" alt="Cart">
+        <span id="cart-count">0</span>
+    </div>
+    <% foods.forEach(food => { %>
+        <div class="food-item">
+            <h2><%= food.name %></h2>
+            <img src="<%= food.image %>" alt="<%= food.name %>">
+            <p>Price: <%= food.price %></p>
+            <p>Category: <%= food.category %></p>
+            <button class="add-to-cart" data-id="<%= food.id %>">Add to Cart</button>
+        </div>
+    <% }); %>
+</body>
+<script>
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', event => {
+            const foodId = event.target.dataset.id;
+            fetch('/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: foodId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cartCount = document.getElementById('cart-count');
+                    cartCount.textContent = data.cart.length;
+                }
+            });
+        });
+    });
+</script>
+</html>

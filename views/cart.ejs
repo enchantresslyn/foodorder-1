@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #f8f8f8;
+        }
+
+        div.food-item {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+    <script src="https://unpkg.com/intasend-inlinejs-sdk@3.0.4/build/intasend-inline.js"></script>
+</head>
+
+<body>
+    <% cart.forEach(food=> { %>
+        <div class="food-item">
+            <h2>
+                <%= food.name %>
+            </h2>
+            <img src="<%= food.image %>" alt="<%= food.name %>">
+            <p>Price: <%= food.price %>
+            </p>
+            <p>Category: <%= food.category %>
+            </p>
+        </div>
+        <% }); %>
+            <form id="checkout-form">
+                <input type="text" id="name" placeholder="Enter your Name">
+                <input type="email" id="email" placeholder="Enter your email">
+                <input type="text" id="phone" placeholder="Enter your phone number">
+                <input type="text" id="address" placeholder="Enter your physical address">
+                <input type="text" id="landmark" placeholder="Enter nearest landmark">
+                <button class="intaSendPayButton" data-amount="<%= totalAmount %>" data-currency="KES">Pay Now</button>
+            </form>
+</body>
+<script>
+    document.getElementById('checkout-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const landmark = document.getElementById('landmark').value;
+
+        new window.IntaSend({
+            publicAPIKey: "ISPubKey_test_a0edf698-98e2-4f8c-a7ae-5e784632e62d",
+            live: false //set to true when going live
+        })
+            .on("COMPLETE", (results) => {
+                console.log("Payment successful", results);
+                fetch('/order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cart: cart, payment: results }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = '/order-page'; 
+                        } else {
+                            console.error('Error creating order:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            })
+            .on("FAILED", (results) => console.log("Do something on failure", results))
+            .on("IN-PROGRESS", (results) => console.log("Payment in progress status", results))
+    });
+</script>
+
+</html>

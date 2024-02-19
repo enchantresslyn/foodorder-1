@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Order Page</title>
+</head>
+
+<body>
+    <h1>Orders</h1>
+    <div id="orders"></div>
+    <script src="/order-page.js"></script>
+</body>
+<script>
+    fetch('/orders')
+        .then(response => response.json())
+        .then(orders => {
+            const ordersDiv = document.getElementById('orders');
+            orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.innerHTML = `
+                    <h2>${order.name}</h2>
+                    <p>Price: ${order.price}</p>
+                    <p>Category: ${order.category}</p>
+                    <p>Landmark: ${order.landmark}</p>
+                `;
+                ordersDiv.appendChild(orderDiv);
+            });
+        });
+</script>
+
+</html>
