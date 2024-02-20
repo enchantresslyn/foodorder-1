@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin: 2em 0;
+        }
+
+        .order {
+            background-color: #fff;
+            margin: 1em;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 80%;
+        }
+
+        .order h2 {
+            color: #4CAF50;
+            border-bottom: 1px solid #4CAF50;
+            padding-bottom: 0.5em;
+        }
+
+        .order h3 {
+            color: #333;
+            margin-top: 2em;
+        }
+
+        .cart {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2em;
+        }
+
+        .cart-item {
+            border: 1px solid #ddd;
+            padding: 1em;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .cart-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 1em;
+        }
+
+        .cart-item p {
+            margin: 0.5em 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('navbar.ejs') %>
+    <h1>Orders</h1>
+
+    <% orders.forEach(order=> { %>
+        <div class="order">
+            <h2>Tracking ID: <%= order.payment.tracking_id %>
+            </h2>
+            <h3>Cart</h3>
+            <div class="cart">
+                <% order.cart.forEach(item=> { %>
+                    <div class="cart-item">
+                        <img src="<%= item.image %>" alt="<%= item.name %>">
+                        <p><strong>
+                                <%= item.name %>
+                            </strong></p>
+                        <p>Price: <%= item.price %>
+                        </p>
+                        <p> Category: <%= item.category %>
+                        </p>
+                    </div>
+                    <% }); %>
+            </div>
+            <h3>Payment</h3>
+            <p>State: <%= order.payment.state %>
+            </p>
+        </div>
+        <% }); %>
+</body>
+
+</html>

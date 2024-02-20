@@ -33,6 +33,7 @@
 </head>
 
 <body>
+
     <% cart.forEach(food=> { %>
         <div class="food-item">
             <h2>
@@ -44,17 +45,25 @@
             <p>Category: <%= food.category %>
             </p>
         </div>
+        <br>
         <% }); %>
-            <form id="checkout-form">
-                <input type="text" id="name" placeholder="Enter your Name">
-                <input type="email" id="email" placeholder="Enter your email">
-                <input type="text" id="phone" placeholder="Enter your phone number">
-                <input type="text" id="address" placeholder="Enter your physical address">
-                <input type="text" id="landmark" placeholder="Enter nearest landmark">
-                <button class="intaSendPayButton" data-amount="<%= totalAmount %>" data-currency="KES">Pay Now</button>
-            </form>
+        <form id="checkout-form" style="margin: 40px; display: flex; flex-direction: column; gap: 10px; width: 300px;">
+            <input type="text" id="name" placeholder="Enter your Name" style="padding: 10px; font-size: 16px;">
+            <input type="email" id="email" placeholder="Enter your email" style="padding: 10px; font-size: 16px;">
+            <input type="text" id="phone" placeholder="Enter your phone number" style="padding: 10px; font-size: 16px;">
+            <input type="text" id="address" placeholder="Enter your physical address" style="padding: 10px; font-size: 16px;">
+            <input type="text" id="landmark" placeholder="Enter nearest landmark" style="padding: 10px; font-size: 16px;">
+            <button class="intaSendPayButton" data-amount="<%= totalAmount %>" data-currency="KES" style="padding: 10px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Pay Now</button>
+        </form>
+        
+
+            <div id="cart-data" style="display: none;">
+                <%= JSON.stringify(cart) %>
+            </div>
+            
 </body>
 <script>
+    const cart = JSON.parse(document.getElementById('cart-data').textContent);
     document.getElementById('checkout-form').addEventListener('submit', event => {
         event.preventDefault();
         const name = document.getElementById('name').value;
@@ -69,6 +78,9 @@
         })
             .on("COMPLETE", (results) => {
                 console.log("Payment successful", results);
+                console.log('cart sent to server: ', cart);
+                console.log('payment details sent to server: ', results);
+
                 fetch('/order', {
                     method: 'POST',
                     headers: {
@@ -79,7 +91,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            window.location.href = '/order-page'; 
+                            window.location.href = '/orders';
                         } else {
                             console.error('Error creating order:', data.error);
                         }

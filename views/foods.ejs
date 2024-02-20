@@ -1,67 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Foods</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Delicious Foods</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            background-color: #f8f8f8;
+            gap: 20px;
         }
-        div.food-item {
+
+        .food-item {
             border: 1px solid #ddd;
-            margin: 10px;
-            padding: 10px;
-            width: 200px;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
             text-align: center;
             background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
-        img {
+
+        .food-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .food-item img {
             width: 100%;
             height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .food-item h2 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .food-item p {
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .food-item button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .food-item button:hover {
+            background-color: #45a049;
+        }
+
+        #cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #4CAF50;
+            padding: 8px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        #cart-icon:hover {
+            transform: scale(1.1);
+        }
+
+        #cart-icon img {
+            width: 30px;
+            height: auto;
+        }
+
+        #cart-count {
+            font-size: 18px;
+            color: #fff;
         }
     </style>
 </head>
+
 <body>
     <%- include('navbar.ejs') %>
-    <div id="cart-icon">
-        <img src="/path/to/cart-icon.png" alt="Cart">
-        <span id="cart-count">0</span>
-    </div>
-    <% foods.forEach(food => { %>
-        <div class="food-item">
-            <h2><%= food.name %></h2>
-            <img src="<%= food.image %>" alt="<%= food.name %>">
-            <p>Price: <%= food.price %></p>
-            <p>Category: <%= food.category %></p>
-            <button class="add-to-cart" data-id="<%= food.id %>">Add to Cart</button>
+        <div class="container">
+            <% foods.forEach(food=> { %>
+                <div class="food-item">
+                    <h2>
+                        <%= food.name %>
+                    </h2>
+                    <img src="<%= food.image %>" alt="<%= food.name %>">
+                    <p><strong>Price:</strong>
+                        <%= food.price %>
+                    </p>
+                    <p><strong>Category:</strong>
+                        <%= food.category %>
+                    </p>
+                    <button class="add-to-cart" data-id="<%= food.id %>">Add to Cart</button>
+                </div>
+                <% }); %>
         </div>
-    <% }); %>
-</body>
-<script>
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', event => {
-            const foodId = event.target.dataset.id;
-            fetch('/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: foodId }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const cartCount = document.getElementById('cart-count');
-                    cartCount.textContent = data.cart.length;
-                }
+        <div id="cart-icon">
+            <img src="/path/to/cart-icon.png" alt="Cart">
+            <span id="cart-count">0</span>
+        </div>
+        <script>
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', event => {
+                    const foodId = event.target.dataset.id;
+                    fetch('/cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: foodId }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const cartCount = document.getElementById('cart-count');
+                                cartCount.textContent = data.cart.length;
+                            }
+                        });
+                });
             });
-        });
-    });
-</script>
+        </script>
+</body>
+
 </html>

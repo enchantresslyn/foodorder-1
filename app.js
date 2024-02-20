@@ -11,6 +11,7 @@ const port = 3000;
 
 
 const app = express();
+app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
 app.use(express.static('public'));
@@ -53,7 +54,7 @@ app.get('/cart', (req, res) => {
 app.post('/checkout', express.json(), (req, res) => {
     const address = req.body.address;
     // Here you can process the checkout, e.g. create an order in your database
-    console.log('Checkout', address, cart);
+    // console.log('Checkout', address, cart);
     res.json({ success: true });
 });
 
@@ -68,19 +69,32 @@ app.post('/create-order', express.json(), (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/order', (req, res) => {
-    // Fetch the order data from the in-memory database
-    const order = db.find(order => order.paymentResults.id === req.query.id);
-    if (order) {
-        res.json(order);
+
+app.post('/order', (req, res) => {
+    console.log('POST /order', req.body); // Log the request body
+
+    const { cart, payment } = req.body;
+
+    // Create an order in the database in memory
+    const order = { cart, payment };
+    console.log('Saving order:', order); // Log the order before saving it
+
+    const result = db.push(order);
+
+    if (result) {
+        console.log('Order saved:', order); // Log the order after saving it
+        res.json({ success: true });
     } else {
-        res.status(404).json({ error: 'Order not found' });
+        console.log('Failed to save order:', order);
+        res.status(500).json({ success: false, message: 'Failed to save order' });
     }
 });
-
-app.get('/order-page', (req, res) => {
-    res.render('order-page');
+app.get('/orders', (req, res) => {
+    console.log('GET /orders', db); // Log the orders
+    res.render('orders', { orders: db });
 });
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
