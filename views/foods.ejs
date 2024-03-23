@@ -14,7 +14,19 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            background-color: #f4f4f4;
+            background-color: #222; /* Darker background color */
+            color: #fff; /* Brighter text color */
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: none; /* Initially hidden */
+            z-index: 9999; /* Ensure it appears on top */
         }
 
         .container {
@@ -25,12 +37,13 @@
         }
 
         .food-item {
-            border: 1px solid #ddd;
+            border: 1px solid #333; /* Darker border color */
             border-radius: 8px;
             padding: 20px;
             width: 250px;
             text-align: center;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+            backdrop-filter: blur(10px); /* Blur effect */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
@@ -49,12 +62,10 @@
         .food-item h2 {
             margin-bottom: 10px;
             font-size: 1.2rem;
-            color: #333;
         }
 
         .food-item p {
             margin-bottom: 5px;
-            color: #666;
         }
 
         .food-item button {

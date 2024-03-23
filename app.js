@@ -2,11 +2,16 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const ejs = require('ejs');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const foods = require('./food/food');
 
 
 const port = 3000;
+
+function generateUniqueId() {
+    return uuidv4();
+}
 
 
 
@@ -16,10 +21,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+// static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    // return index.html
+    res.render('index');
 }
 );
 
@@ -75,20 +84,26 @@ app.post('/order', (req, res) => {
 
     const { cart, payment } = req.body;
 
+    // Generate a unique identifier for the order
+    const orderId = generateUniqueId(); // You need to implement this function
+
+    // Check if an order with the same ID already exists in the database
+    if (db.some(order => order.orderId === orderId)) {
+        console.log('Duplicate order detected');
+        res.status(400).json({ success: false, message: 'Duplicate order detected' });
+        return;
+    }
+
     // Create an order in the database in memory
-    const order = { cart, payment };
+    const order = { orderId, cart, payment };
     console.log('Saving order:', order); // Log the order before saving it
 
-    const result = db.push(order);
+    db.push(order);
 
-    if (result) {
-        console.log('Order saved:', order); // Log the order after saving it
-        res.json({ success: true });
-    } else {
-        console.log('Failed to save order:', order);
-        res.status(500).json({ success: false, message: 'Failed to save order' });
-    }
+    console.log('Order saved:', order); // Log the order after saving it
+    res.json({ success: true });
 });
+
 app.get('/orders', (req, res) => {
     console.log('GET /orders', db); // Log the orders
     res.render('orders', { orders: db });
